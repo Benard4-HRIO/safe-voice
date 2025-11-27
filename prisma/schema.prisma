@@ -1,0 +1,201 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String   @id @default(cuid())
+  email         String?  @unique
+  phone         String?
+  role          String   @default("SURVIVOR")
+  language      String   @default("en")
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Profile
+  displayName   String?
+  isVerified    Boolean  @default(false)
+
+  // Privacy & Consent
+  consentGiven  Boolean  @default(false)
+  consentDate   DateTime?
+  dataSharing   Boolean  @default(false)
+
+  // Relationships
+  reports       Report[]
+  stories       Story[]
+  supportProfile SupportProfile?
+  emergencyContacts EmergencyContact[]
+  sessions      Session[]
+
+  @@map("users")
+}
+
+model Report {
+  id              String   @id @default(cuid())
+  reportId        String   @unique
+  encryptedData   String
+  encryptedKey    String
+
+  // Metadata
+  status          String   @default("PENDING")
+  incidentDate    DateTime?
+  location        String?
+  latitude        Float?
+  longitude       Float?
+
+  // Media
+  hasMedia        Boolean  @default(false)
+  mediaUrls       String?
+
+  // Emergency
+  isEmergency     Boolean  @default(false)
+  panicTriggered  Boolean  @default(false)
+
+  // Moderation
+  reviewedBy      String?
+  reviewedAt      DateTime?
+  reviewNotes     String?
+
+  // Relationships
+  userId          String?
+  user            User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@map("reports")
+}
+
+model Story {
+  id              String   @id @default(cuid())
+  storyId         String   @unique
+  content         String
+  title           String?
+
+  // Moderation
+  status          String   @default("PENDING")
+  moderatedBy     String?
+  moderatedAt     DateTime?
+  moderationNotes String?
+
+  // Engagement
+  upvotes         Int      @default(0)
+  flags           Int      @default(0)
+  tags            String?
+
+  // Relationships
+  userId          String?
+  user            User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@map("stories")
+}
+
+model SupportProfile {
+  id              String   @id @default(cuid())
+  type            String   @default("COUNSELOR")
+  name            String
+  organization    String?
+  description     String
+  specialization  String?
+
+  // Contact
+  email           String?
+  phone           String?
+  website         String?
+
+  // Location
+  address         String?
+  city            String?
+  country         String?
+  latitude        Float?
+  longitude       Float?
+  coverageRadius  Float?
+
+  // Verification
+  isVerified      Boolean  @default(false)
+  verifiedBy      String?
+  verifiedAt      DateTime?
+  licenseNumber   String?
+
+  // Availability
+  isAvailable     Boolean  @default(true)
+  workingHours    String?
+
+  // Relationships
+  userId          String   @unique
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  contactRequests ContactRequest[]
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@map("support_profiles")
+}
+
+model ContactRequest {
+  id               String   @id @default(cuid())
+  message          String?
+  status           String   @default("PENDING")
+
+  // Relationships
+  requesterId      String
+  supportProfileId String
+  supportProfile   SupportProfile @relation(fields: [supportProfileId], references: [id], onDelete: Cascade)
+
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@map("contact_requests")
+}
+
+model EmergencyContact {
+  id           String   @id @default(cuid())
+  name         String
+  phone        String
+  email        String?
+  relationship String?
+  isPrimary    Boolean  @default(false)
+
+  // Relationships
+  userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@map("emergency_contacts")
+}
+
+model Session {
+  id            String   @id @default(cuid())
+  sessionToken  String   @unique
+  encryptedData String?
+
+  // Relationships
+  userId        String
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  expiresAt     DateTime
+  createdAt     DateTime @default(now())
+
+  @@map("sessions")
+}
+
+model ConsentLog {
+  id        String   @id @default(cuid())
+  userId    String
+  action    String
+  details   String?
+  timestamp DateTime @default(now())
+
+  @@map("consent_logs")
+}
+
