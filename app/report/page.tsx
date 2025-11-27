@@ -17,6 +17,8 @@ interface ReportForm {
 
 export default function ReportPage() {
   const { t } = useTranslation();
+  const privacyPoints = t('report.privacy.points', { returnObjects: true });
+  const privacyList: string[] = Array.isArray(privacyPoints) ? (privacyPoints as string[]) : [];
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
   const [reportId, setReportId] = useState<string | null>(null);
@@ -171,12 +173,18 @@ export default function ReportPage() {
             {t('report.privacy.title')}
           </h3>
           <ul className="space-y-2 text-sm text-blue-800">
-            {t('report.privacy.points', { returnObjects: true }).map((point: string, index: number) => (
-              <li key={index} className="flex items-start">
-                <span className="mr-2">✓</span>
-                <span>{point}</span>
+            {privacyList.length > 0 ? (
+              privacyList.map((point, index) => (
+                <li key={index} className="flex items-start">
+                  <span className="mr-2">✓</span>
+                  <span>{point}</span>
+                </li>
+              ))
+            ) : (
+              <li className="text-blue-800">
+                All data is encrypted end-to-end and your identity stays private.
               </li>
-            ))}
+            )}
           </ul>
         </div>
 

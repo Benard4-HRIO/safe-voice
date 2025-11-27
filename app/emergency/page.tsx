@@ -178,7 +178,7 @@ export default function EmergencyPage() {
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
               <h3 className="font-semibold text-blue-900 mb-3">Safety Tips</h3>
               <ul className="space-y-2 text-sm text-blue-800">
-                <li>• If you're in immediate danger, call 911 first</li>
+                <li>• If you&apos;re in immediate danger, call 911 first</li>
                 <li>• Try to get to a safe location if possible</li>
                 <li>• Keep your phone charged and accessible</li>
                 <li>• Trust your instincts - if something feels wrong, it probably is</li>

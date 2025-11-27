@@ -61,8 +61,12 @@ export default function MapComponent({ profiles, userLocation }: MapComponentPro
     mapRef.current.eachLayer((layer) => {
       if (layer instanceof L.Marker) {
         const popup = layer.getPopup();
-        if (popup && popup.getContent() && !popup.getContent()?.includes('Your Location')) {
-          mapRef.current?.removeLayer(layer);
+        if (popup) {
+          const content = popup.getContent();
+          // Fix: Check if content is a string before calling includes
+          if (content && typeof content === 'string' && !content.includes('Your Location')) {
+            mapRef.current?.removeLayer(layer);
+          }
         }
       }
     });
@@ -85,4 +89,3 @@ export default function MapComponent({ profiles, userLocation }: MapComponentPro
 
   return <div ref={mapContainerRef} className="w-full h-full" />;
 }
-

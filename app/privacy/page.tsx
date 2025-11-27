@@ -76,7 +76,7 @@ export default function PrivacyPage() {
             </div>
             <p className="text-gray-700 mb-4">
               You can report incidents without revealing your identity. Each report is assigned a unique
-              anonymous ID that you can use to track your report's status.
+              anonymous ID that you can use to track your report&apos;s status.
             </p>
             <ul className="space-y-2 text-gray-600">
               <li>• No personal information required for reporting</li>
